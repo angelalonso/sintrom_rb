@@ -1,0 +1,25 @@
+#!/usr/bin/ruby
+
+Directory="/home/aaf/e-yo"
+#require "#{Directory}/xml_parser.rb"
+require "#{Directory}/cal.rb"
+require "#{Directory}/gui.rb"
+require 'date'
+
+CALENDAR_FILE = "#{Directory}/Calendar.csv"
+
+class MainApp
+	def initialize(configfile) 
+
+		@cal = Cal.new(configfile)
+
+		test = @cal.shift_for_day("20120803")
+	#	puts test
+		@cal.shift_add_day(20121205,"Spaetschicht")
+		day_to_search = Date.today
+		#@cal.shift_add_week(day_to_search)
+	end
+end
+
+app=MainApp.new(CALENDAR_FILE)
+

@@ -1,0 +1,256 @@
+#!/bin/bash
+#
+workfolder="/home/aaf/scripts/control"
+tmpfolder="$workfolder/temp"
+aux_options="$tmpfolder/aux_opts"
+aux_info="$tmpfolder/aux_info"
+sintrom_prog="/home/aaf/scripts/sintromdata.sh"
+
+options=( calendar backup battery system exit )
+
+####################### 
+# Graphical functions #
+#######################
+
+# Draw an Horizontal line
+
+function draw_horiz_line(){
+echo -n "+"
+for (( i=2 ; i <$1 ; i++ ))
+do
+  echo -n "-"
+done
+echo "+"
+}
+
+# Write text on the center, with borders
+
+function draw_center_text(){
+echo -n "|"
+length=${#1}
+spc_bfore=`expr \`expr $2 / 2\` - \`expr $length / 2\``
+spc_after=`expr $2 - \`expr $spc_bfore + 2 + $length\``
+for (( i=1 ; i <=$spc_bfore ; i++ ))
+do
+  echo -n " "
+done
+echo -n "$1"
+for (( i=1 ; i <=$spc_after ; i++ ))
+do
+  echo -n " "
+done
+echo "|"
+}
+
+# Write text on the left, with borders
+
+function draw_left_text(){
+echo -n "| "
+length=${#1}
+spc_after=`expr $2 - \`expr 3 + $length\``
+echo -n "$1"
+for (( i=1 ; i <=$spc_after ; i++ ))
+do
+  echo -n " "
+done
+echo "|"
+}
+
+# Write the gui, as per standards
+
+function draw_gui(){
+# Parameters expected (in order):
+#  1 - menu position (something like "menu > submenu > subsubmenu")
+#  2 - title
+#  3 - 
+
+cols=$(tput cols)
+lines=$(tput lines)
+# first line, a complete one
+clear
+echo $1
+draw_horiz_line $cols
+draw_center_text "$2" $cols
+draw_horiz_line $cols
+cat $aux_info | while read line 
+do
+  draw_left_text "$line" $cols
+done
+draw_horiz_line $cols
+cat $aux_options | while read line 
+do
+  draw_left_text "$line" $cols
+done
+draw_horiz_line $cols
+}
+
+
+###########
+# Sintrom #
+###########
+
+function calendar.sintrom (){
+options_sin=( back )
+responseok="not"
+while [ "$responseok" != "ok" ]; do
+  clear
+  echo "> Main > Calendar > Sintrom"
+  echo ".---- Sintrom calendar Functions ----."
+  echo " - Options:"
+  echo
+  cntr=1
+  for i in ${options_sin[@]}
+  do
+    echo $cntr - $i
+    cntr=`expr $cntr + 1`
+  done
+  maxoption=`expr $cntr - 1`
+  read -n 1 -s response
+  if [ $response -ne 0 -o $response -eq 0 2>/dev/null ]; then
+    if [ $response -eq 0 -o $response -gt $maxoption ]; then
+      responseok="not"
+      echo "ERROR! - invalid answer"
+      echo "Please, enter a number that corresponds to one of the Options"
+      sleep 1
+    else
+      responseok="ok"
+    fi
+  else
+    responseok="not"
+    echo "ERROR! - invalid answer"
+    echo "Please, enter a number"
+    sleep 1
+  fi
+done
+case $response in
+  1)
+   menu;;
+esac
+}
+
+############
+# Calendar #
+############
+
+function calendar(){
+options_cal=( workshifts sintrom back )
+responseok="not"
+while [ "$responseok" != "ok" ]; do
+  clear
+  echo "> Main > Calendar"
+  echo ".---- Calendar Functions ----."
+  echo " - Options:"
+  echo
+  cntr=1
+  for i in ${options_cal[@]}
+  do
+    echo $cntr - $i
+    cntr=`expr $cntr + 1`
+  done
+  echo
+  maxoption=`expr $cntr - 1`
+  read -n 1 -s response
+  if [ $response -ne 0 -o $response -eq 0 2>/dev/null ]; then
+    if [ $response -eq 0 -o $response -gt $maxoption ]; then
+      responseok="not"
+      echo "ERROR! - invalid answer"
+      echo "Please, enter a number that corresponds to one of the Options"
+      sleep 1
+    else
+      responseok="ok"
+    fi
+  else
+    responseok="not"
+    echo "ERROR! - invalid answer"
+    echo "Please, enter a number"
+    sleep 1
+  fi
+done
+case $response in
+  1)
+   echo Workshifts information goes here
+   sleep 1;;
+  2) 
+   calendar.sintrom;;
+  3)
+   menu;;
+esac
+}
+ 
+########
+# Menu #
+########
+function menu(){
+#cleaning
+rm $aux_info 2>/dev/null
+rm $aux_options 2>/dev/null
+
+responseok="not"
+menu_line="> main"
+title="Control Center"
+
+# Create and fulfill the main information Area
+echo "Main Information for today:" >> $aux_info
+echo " " >> $aux_info
+#echo -n " - Sintrom for today, " >> $aux_info
+#echo `$sintrom_prog today` >> $aux_info
+#echo " " >> $aux_info
+#echo `$sintrom_prog test` >> $aux_info
+#echo `$sintrom_prog update` >> $aux_info
+#echo "-------------------- " >> $aux_info
+#/home/aaf/scripts/control/cal.rb >> $aux_info
+/home/aaf/e-yo/cal.rb >> $aux_info
+
+# Create and fulfill the options file
+echo " - Options:" >> $aux_options
+echo " " >> $aux_options
+cntr=1
+for i in ${options[@]}
+do
+  echo $cntr - $i >> $aux_options
+  cntr=`expr $cntr + 1`
+done
+echo " " >> $aux_options
+
+while [ "$responseok" != "ok" ]; do
+  draw_gui "$menu_line" "$title"
+  maxoption=`expr $cntr - 1`
+  read -n 1 -s response
+  if [ $response -ne 0 -o $response -eq 0 2>/dev/null ]; then
+    if [ $response -eq 0 -o $response -gt $maxoption ]; then
+      responseok="not"
+      echo "ERROR! - invalid answer"
+      echo "Please, enter a number that corresponds to one of the Options"
+      sleep 1
+    else
+      responseok="ok"
+    fi
+  else
+    responseok="not"
+    echo "ERROR! - invalid answer"
+    echo "Please, enter a number"
+    sleep 1
+  fi
+done
+
+case $response in
+  1)
+   calendar;;
+  2) 
+   echo elegida la segunda 
+   sleep 1;;
+  3)
+   echo elegida la tercera 
+   sleep 1;;
+  4)
+   echo elegida la cuarta
+   sleep 1;;
+  5)
+   echo "KTHNXBYE !!";;
+esac
+}
+
+menu
+rm $aux_info 2>/dev/null
+rm $aux_options 2>/dev/null
+

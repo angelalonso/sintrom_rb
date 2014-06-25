@@ -1,0 +1,46 @@
+#!/usr/bin/ruby
+
+Directory="/home/aaf/e-yo"
+#require "#{Directory}/xml_parser.rb"
+require "#{Directory}/cal.rb"
+require "#{Directory}/gui.rb"
+require 'date'
+
+CALENDAR_FILE = "#{Directory}/Calendar.csv"
+
+class MainApp
+	def initialize(configfile) 
+
+		# And launch that first screen
+		Gtk.init
+		app = Win.new(configfile)
+		Gtk.main
+	end	
+end
+
+app = MainApp.new(CALENDAR_FILE)
+
+dar.new(CALENDAR_FILE)
+
+		# Now we sort the Calendar File
+		@cal.sort
+		@cal.test_doubled_values
+
+		# Generate the data shown on the first screen
+		today = [Date.today.year,"%02d" % Date.today.month,"%02d" % Date.today.day].join('')
+		#today = [Time.now.year,"%02d" % Time.now.month,"%02d" % Time.now.day].join('')
+
+		sintrom_today = @cal.sintrom_amount(today)
+		next_test = @cal.next_sintrom_test(today),"\n" 
+		next_update = @cal.sintrom_next_update,"\n" 
+
+		# And launch that first screen
+		init
+		app = Win.new( "e-yo")
+		app.main_area_first_values("Sintrom","Today's amount of Sintrom: #{sintrom_today}","Next test should take place on #{next_test}","The file should be updated before #{next_update}")
+		main
+	end	
+end
+
+app = MainApp.new(ConfigFile)
+

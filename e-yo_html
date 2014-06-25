@@ -1,0 +1,39 @@
+#!/usr/bin/ruby
+
+Directory="/home/aaf/e-yo"
+require "#{Directory}/xml_parser.rb"
+require "#{Directory}/cal.rb"
+require "#{Directory}/gui_html.rb"
+
+Win_height = 600
+Win_width = 800
+
+class MainApp
+	def initialize(configfile) 
+		# Here we will load the config file
+		config = Config.new(configfile)
+	end	
+end
+
+ConfigFile="#{Directory}/conf_gui.xml"
+
+CALENDAR_FILE = "#{Directory}/Calendar.csv"
+c1 = Calendar.new(CALENDAR_FILE)
+c1.sort
+c1.test_doubled_values
+Today = [Time.now.year,"%02d" % Time.now.month,"%02d" % Time.now.day].join('')
+sintrom_today = c1.sintrom_amount(Today)
+next_test = c1.next_sintrom_test(Today),"\n"
+next_update = c1.sintrom_next_update,"\n"
+#App = MainApp.new(ConfigFile)
+site = MainSite.new
+site.create_main(sintrom_today,next_test,next_update)
+site.launch_browser(Win_width,Win_height)
+
+#layer_a_vcut = 560
+#Gtk.init
+#window = MainApp.new
+#window.main_base(Win_width,Win_height)
+#window.layer_a(layer_a_vcut)
+#Gtk.main
+

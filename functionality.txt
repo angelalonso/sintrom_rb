@@ -1,0 +1,14 @@
+- Primera pantalla:
+
+Cantidad de Sintrom
+Agenda de Hoy
+
+Próximos cumpleaños
+Próximos turnos
+Detalles sobre Sintrom
+
+Acceso a Sintrom
+Acceso a Agenda
+Acceso a Turnos
+Acceso a Compleaños
+Salir

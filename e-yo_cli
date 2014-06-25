@@ -1,0 +1,25 @@
+#!/usr/bin/ruby
+
+Directory="/home/aaf/e-yo"
+require "#{Directory}/xml_parser.rb"
+require "#{Directory}/cal.rb"
+require "#{Directory}/gui_gtk.rb"
+
+
+class MainApp
+	def initialize(configfile) 
+		# Here we will load the config file
+		config = Config.new(configfile)
+	end	
+end
+
+ConfigFile="#{Directory}/conf_gui.xml"
+
+CALENDAR_FILE = "#{Directory}/Calendar.aux.csv"
+c1 = Calendar.new(CALENDAR_FILE)
+c1.sort
+c1.test_doubled_values
+Today = [Time.now.year,"%02d" % Time.now.month,"%02d" % Time.now.day].join('')
+
+app = Win.new( "e-yo", sintrom_amount)
+
